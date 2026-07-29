@@ -1,0 +1,61 @@
+services:
+    laravel.test:
+        build:
+            context: ./docker/8.3
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.3/app
+        container_name: theforgeapi
+        ports:
+            - '${APP_PORT:-8000}:80'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - forge
+        depends_on:
+            - mysql
+
+    mysql:
+        image: 'mysql:8.4'
+        container_name: theforgeapi-mysql
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'mysql_data:/var/lib/mysql'
+            - './docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql'
+        networks:
+            - forge
+
+    phpmyadmin:
+        image: 'phpmyadmin:latest'
+        container_name: theforgeapi-phpmyadmin
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_PHPMYADMIN_PORT:-8081}:80'
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_USER: '${DB_USERNAME}'
+            PMA_PASSWORD: '${DB_PASSWORD}'
+            PMA_ARBITRARY: 1
+        depends_on:
+            - mysql
+        networks:
+            - forge
+
+networks:
+    forge:
+        driver: bridge
+
+volumes:
+    mysql_data:
