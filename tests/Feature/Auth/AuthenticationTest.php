@@ -3,6 +3,7 @@
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
@@ -96,4 +97,70 @@ test('le rôle envoyé par le client est ignoré', function () {
         'email' => 'client@example.com',
         'role' => UserRole::Client->value,
     ]);
+});
+
+test('un utilisateur peut se connecter', function () {
+    $user = User::factory()->create([
+        'email' => 'client@example.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $response = $this->postJson('/api/v1/login', [
+        'email' => 'client@example.com',
+        'password' => 'password123',
+    ]);
+
+    $response
+        ->assertOk()
+        ->assertJsonPath('message', 'Connexion réussie.')
+        ->assertJsonPath('data.user.id', $user->id)
+        ->assertJsonPath('data.user.email', 'client@example.com')
+        ->assertJsonPath('data.token_type', 'Bearer')
+        ->assertJsonStructure([
+            'message',
+            'data' => [
+                'user',
+                'token',
+                'token_type',
+            ],
+        ]);
+
+    expect($response->json('data.token'))->not->toBeEmpty();
+});
+test('un utilisateur ne peut pas se connecter avec un mauvais mot de passe', function () {
+    User::factory()->create([
+        'email' => 'client@example.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $response = $this->postJson('/api/v1/login', [
+        'email' => 'client@example.com',
+        'password' => 'mauvais-password',
+    ]);
+
+    $response
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['email']);
+});
+
+test('un utilisateur ne peut pas se connecter avec un email inconnu', function () {
+    $response = $this->postJson('/api/v1/login', [
+        'email' => 'inconnu@example.com',
+        'password' => 'password123',
+    ]);
+
+    $response
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['email']);
+});
+
+test('email et mot de passe sont obligatoires pour se connecter', function () {
+    $response = $this->postJson('/api/v1/login', []);
+
+    $response
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors([
+            'email',
+            'password',
+        ]);
 });
