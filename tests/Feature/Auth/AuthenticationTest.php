@@ -164,3 +164,47 @@ test('email et mot de passe sont obligatoires pour se connecter', function () {
             'password',
         ]);
 });
+test('un utilisateur authentifié peut récupérer son profil', function () {
+    $user = User::factory()->create();
+
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    $response = $this
+        ->withToken($token)
+        ->getJson('/api/v1/user');
+
+    $response
+        ->assertOk()
+        ->assertJsonPath('id', $user->id)
+        ->assertJsonPath('email', $user->email)
+        ->assertJsonPath('role', UserRole::Client->value);
+});
+test('un utilisateur non authentifié ne peut pas récupérer son profil', function () {
+    $response = $this->getJson('/api/v1/user');
+
+    $response
+        ->assertUnauthorized()
+        ->assertJsonPath('message', 'Unauthenticated.');
+});
+test('un utilisateur authentifié peut se déconnecter', function () {
+    $user = User::factory()->create([
+        'role' => UserRole::Client,
+    ]);
+
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    $response = $this
+        ->withToken($token)
+        ->postJson('/api/v1/logout');
+
+    $response
+        ->assertOk()
+        ->assertJsonPath('message', 'Déconnexion réussie.');
+
+    $this->assertDatabaseCount('personal_access_tokens', 0);
+});
+
+test('un utilisateur non authentifié ne peut pas se déconnecter', function () {
+    $this->postJson('/api/v1/logout')
+        ->assertUnauthorized();
+});
