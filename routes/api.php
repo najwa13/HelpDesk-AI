@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,15 @@ Route::prefix('v1')->group(function () {
         Route::patch('/tickets/{ticket}/affecter', [
             TicketController::class,
             'assign',
+        ]);
+        Route::get('/tickets/{ticket}/messages', [
+            MessageController::class,
+            'index',
+        ]);
+
+        Route::post('/tickets/{ticket}/messages', [
+            MessageController::class,
+            'store',
         ]);
     });
 });
