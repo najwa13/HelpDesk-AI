@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
@@ -37,5 +38,7 @@ Route::prefix('v1')->group(function () {
             MessageController::class,
             'store',
         ]);
+        Route::apiResource('categories', CategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
     });
 });

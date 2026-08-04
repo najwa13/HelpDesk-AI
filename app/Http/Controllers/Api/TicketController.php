@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
 
@@ -124,6 +125,9 @@ class TicketController extends Controller
         $ticket->update([
             'agent_id' => $agent->id,
         ]);
+        $agent->notify(
+            new TicketAssignedNotification($ticket)
+        );
 
         return new TicketResource(
             $ticket->load([
