@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MessageController;
@@ -40,5 +41,7 @@ Route::prefix('v1')->group(function () {
         ]);
         Route::apiResource('categories', CategoryController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+
+        Route::apiResource('articles', ArticleController::class);
     });
 });
