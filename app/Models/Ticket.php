@@ -48,6 +48,6 @@ class Ticket extends Model
 
     public function suggestionsIA()
     {
-        return $this->hasMany(AIAnalysis::class);
+        return $this->hasMany(AiSuggestion::class);
     }
 }
