@@ -1,0 +1,13 @@
+[90m= [39m[34;4mApp\Models\SearchLog[39;24m {#8172
+    [34mid[39m: [35m1[39m,
+    [34mrequete_originale[39m: [32m"[39m[32mmot de passe oublié[39m[32m"[39m,
+    [34mrequete_normalisee[39m: [32m"[39m[32mmot de passe oublié[39m[32m"[39m,
+    [34mlangue_detectee[39m: [36mnull[39m,
+    [34mresultat[39m: [32m"[39m[32mtrouve[39m[32m"[39m,
+    [34mscore_correspondance[39m: [32m"[39m[32m0.4531[39m[32m"[39m,
+    [34mclient_id[39m: [35m1[39m,
+    [34marticle_id[39m: [35m1[39m,
+    [34mticket_id[39m: [36mnull[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-08-06 13:29:52[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-08-06 13:29:52[39m[32m"[39m,
+  }
