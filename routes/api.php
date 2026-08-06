@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\KbSearchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
@@ -43,5 +44,15 @@ Route::prefix('v1')->group(function () {
             ->only(['index', 'store', 'update', 'destroy']);
 
         Route::apiResource('articles', ArticleController::class);
+
+        Route::post('/kb/search', [
+            KbSearchController::class,
+            'search',
+        ]);
+
+        Route::post('/kb/search/{searchLogId}/ticket', [
+            KbSearchController::class,
+            'creerTicketDepuisRecherche',
+        ]);
     });
 });
