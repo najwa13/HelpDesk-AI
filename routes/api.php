@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AiAnalysisController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
@@ -53,6 +54,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/kb/search/{searchLogId}/ticket', [
             KbSearchController::class,
             'creerTicketDepuisRecherche',
+        ]);
+        Route::post('/tickets/{ticket}/ai/analyze', [
+            AiAnalysisController::class,
+            'analyze',
+        ]);
+
+        Route::get('/tickets/{ticket}/ai/analysis', [
+            AiAnalysisController::class,
+            'show',
         ]);
     });
 });
