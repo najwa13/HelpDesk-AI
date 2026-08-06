@@ -1,0 +1,12 @@
+[90m= [39m[34;4mApp\Models\Ticket[39;24m {#8164
+    [34mid[39m: [35m3[39m,
+    [34mtitre[39m: [32m"[39m[32mProblème imprimante réseau[39m[32m"[39m,
+    [34mdescription[39m: [32m"[39m[32mJe rencontre un problème avec mon imprimante réseau et aucun article de la base de connaissances ne correspond.[39m[32m"[39m,
+    [34mstatut[39m: [32m"[39m[32mouvert[39m[32m"[39m,
+    [34mpriorite[39m: [36mnull[39m,
+    [34mclient_id[39m: [35m1[39m,
+    [34magent_id[39m: [36mnull[39m,
+    [34mcategorie_id[39m: [35m1[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-08-06 13:52:39[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-08-06 13:52:39[39m[32m"[39m,
+  }
