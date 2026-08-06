@@ -64,5 +64,15 @@ Route::prefix('v1')->group(function () {
             AiAnalysisController::class,
             'show',
         ]);
+
+        Route::patch('/tickets/{ticket}/ai/analysis', [
+            AiAnalysisController::class,
+            'update',
+        ]);
+
+        Route::post('/tickets/{ticket}/ai/analysis/validate', [
+            AiAnalysisController::class,
+            'validateSuggestion',
+        ]);
     });
 });
