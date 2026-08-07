@@ -5,9 +5,12 @@ namespace App\Models;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Ai\Concerns\HasConversations;
 
 class Ticket extends Model
 {
+    use HasConversations;
+
     protected $fillable = [
         'titre',
         'description',
