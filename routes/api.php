@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AiAnalysisController;
+use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
@@ -73,6 +74,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/tickets/{ticket}/ai/analysis/validate', [
             AiAnalysisController::class,
             'validateSuggestion',
+        ]);
+        Route::post('/tickets/{ticket}/ai/chat', [
+            AiChatController::class,
+            'send',
+        ]);
+        Route::get('/tickets/{ticket}/ai/chat/{conversationId}', [
+            AiChatController::class,
+            'history',
         ]);
     });
 });
