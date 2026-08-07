@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ClientAiChatController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\KbSearchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\TicketController;
@@ -92,6 +93,15 @@ Route::prefix('v1')->group(function () {
         Route::get('/client/ai/chat/{conversationId}', [
             ClientAiChatController::class,
             'history',
+        ]);
+        Route::get('/dashboard/admin', [
+            DashboardController::class,
+            'admin',
+        ]);
+
+        Route::get('/dashboard/agent', [
+            DashboardController::class,
+            'agent',
         ]);
     });
 });
