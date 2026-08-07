@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ClientAiChatController;
 use App\Http\Controllers\Api\KbSearchController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\TicketController;
@@ -81,6 +82,15 @@ Route::prefix('v1')->group(function () {
         ]);
         Route::get('/tickets/{ticket}/ai/chat/{conversationId}', [
             AiChatController::class,
+            'history',
+        ]);
+        Route::post('/client/ai/chat', [
+            ClientAiChatController::class,
+            'send',
+        ]);
+
+        Route::get('/client/ai/chat/{conversationId}', [
+            ClientAiChatController::class,
             'history',
         ]);
     });
