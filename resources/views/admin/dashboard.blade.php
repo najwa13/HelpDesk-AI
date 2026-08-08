@@ -52,7 +52,7 @@
     $allMonths = collect($ticketsByMonth)->pluck('month')->toArray();
 
     $lineSeries = $categories->map(function ($items, $name) use ($allMonths, $categoryColors, $categories) {
-        $colorIndex = $categories->keys()->indexOf($name);
+        $colorIndex = $categories->keys()->search($name);
         $color = $categoryColors[$colorIndex % count($categoryColors)];
         $monthTotals = collect($allMonths)->map(function ($month) use ($items) {
             $found = $items->firstWhere('month', $month);
@@ -89,8 +89,9 @@
         }
         return implode(' ', $points);
     }
-@endsection
+@endphp
 
+@section('content')
 <div style="animation:fadeUp .45s both;">
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;">
         @foreach($statCards as $i => $card)
@@ -251,3 +252,4 @@
         </div>
     </div>
 </div>
+@endsection
