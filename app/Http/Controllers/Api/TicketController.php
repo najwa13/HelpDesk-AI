@@ -10,10 +10,9 @@ use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
-use App\Models\User;
-use App\Notifications\TicketAssignedNotification;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class TicketController extends Controller
 {
@@ -111,23 +110,17 @@ class TicketController extends Controller
     {
         $this->authorize('assign', Ticket::class);
 
-        $agent = User::query()
-            ->whereKey($request->validated('agent_id'))
-            ->where('role', UserRole::Agent->value)
-            ->first();
-
-        if (! $agent) {
+        try {
+            $this->ticketService->assign(
+                $ticket,
+                $request->validated('agent_id'),
+                $request->user()
+            );
+        } catch (InvalidArgumentException $e) {
             return response()->json([
-                'message' => 'L’utilisateur sélectionné n’est pas un agent.',
+                'message' => $e->getMessage(),
             ], 422);
         }
-
-        $ticket->update([
-            'agent_id' => $agent->id,
-        ]);
-        $agent->notify(
-            new TicketAssignedNotification($ticket)
-        );
 
         return new TicketResource(
             $ticket->load([

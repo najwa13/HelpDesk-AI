@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,7 +20,7 @@
             color: var(--text);
         }
 
-        :root {
+        [data-theme="light"] {
             --bg: #f4f4fb;
             --surface: #ffffff;
             --surface2: #faf9ff;
@@ -29,10 +29,28 @@
             --text2: #6c6885;
             --muted: #a29fb5;
             --primsoft: #f4effe;
+            --track: #eeecf7;
+            --navbg: rgba(244,244,251,.85);
+            --shadow: 0 1px 2px rgba(20,10,50,.05), 0 10px 30px rgba(20,10,50,.05);
+            --hover-shadow: 0 8px 30px rgba(20,10,50,.08);
+        }
+        [data-theme="dark"] {
+            --bg: #0c0a17;
+            --surface: #151127;
+            --surface2: #1b1734;
+            --border: #282343;
+            --text: #f3f1fb;
+            --text2: #a5a2bd;
+            --muted: #726e90;
+            --primsoft: #221c40;
+            --track: #221d3d;
+            --navbg: rgba(12,10,23,.85);
+            --shadow: 0 1px 2px rgba(0,0,0,.5), 0 12px 34px rgba(0,0,0,.4);
+            --hover-shadow: 0 12px 32px rgba(0,0,0,.45);
+        }
+        :root {
             --accent: #7c3aed;
             --accent2: #5b21b6;
-            --track: #eeecf7;
-            --shadow: 0 1px 2px rgba(20,10,50,.05), 0 10px 30px rgba(20,10,50,.05);
         }
 
         @keyframes fadeUp {
@@ -65,7 +83,7 @@
 <body>
 
 {{-- NAVBAR --}}
-<nav style="position:sticky;top:0;z-index:50;background:rgba(244,244,251,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);">
+<nav style="position:sticky;top:0;z-index:50;background:var(--navbg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);">
     <div style="max-width:1200px;margin:0 auto;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;">
         <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
             <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;box-shadow:0 4px 12px -3px var(--accent);">H</div>
@@ -79,16 +97,30 @@
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;">
+            <button id="theme-toggle" title="Basculer le thème" style="width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center;transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+                <svg id="theme-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"></path></svg>
+            </button>
             @guest
                 <a href="{{ route('login') }}" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--text);text-decoration:none;border:1px solid var(--border);background:var(--surface);transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Se connecter</a>
                 <a href="{{ route('register') }}" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 14px -4px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Créer un compte</a>
             @else
-                @php $isAdmin = auth()->user()->role->value === 'admin'; @endphp
-                @if($isAdmin)
-                    <a href="/admin/dashboard" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 14px -4px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Accéder à mon espace</a>
+                @php
+                    $userRole = auth()->user()->role;
+                    $dashboardUrl = match($userRole) {
+                        \App\Enums\UserRole::Admin => '/admin/dashboard',
+                        \App\Enums\UserRole::Agent => '/agent/dashboard',
+                        default => null,
+                    };
+                @endphp
+                @if($dashboardUrl)
+                    <a href="{{ $dashboardUrl }}" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 14px -4px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Accéder à mon espace</a>
                 @else
                     <span style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--track);cursor:default;opacity:.7;">Espace bientôt disponible</span>
                 @endif
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--text);background:transparent;border:1px solid var(--border);cursor:pointer;transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Déconnexion</button>
+                </form>
             @endguest
         </div>
     </div>
@@ -113,15 +145,26 @@
                     </a>
                     <a href="{{ route('login') }}" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:var(--text);text-decoration:none;background:var(--surface);border:1px solid var(--border);transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Se connecter</a>
                 @else
-                    @php $isAdmin = auth()->user()->role->value === 'admin'; @endphp
-                    @if($isAdmin)
-                        <a href="/admin/dashboard" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 24px -6px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                    @php
+                        $userRole = auth()->user()->role;
+                        $dashboardUrl = match($userRole) {
+                            \App\Enums\UserRole::Admin => '/admin/dashboard',
+                            \App\Enums\UserRole::Agent => '/agent/dashboard',
+                            default => null,
+                        };
+                    @endphp
+                    @if($dashboardUrl)
+                        <a href="{{ $dashboardUrl }}" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 24px -6px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                             Accéder à mon espace
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
                     @else
                         <span style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;color:var(--muted);background:var(--track);cursor:default;opacity:.7;">Espace bientôt disponible</span>
                     @endif
+                    <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:var(--text);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Déconnexion</button>
+                    </form>
                 @endguest
             </div>
         </div>
@@ -180,7 +223,7 @@
     <p class="section-sub">Une plateforme complète qui combine gestion de tickets, base de connaissances et assistance par intelligence artificielle.</p>
 
     <div class="feat-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:var(--primsoft);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 012-2h12a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 000-4z"/></svg>
             </div>
@@ -188,7 +231,7 @@
             <p style="font-size:14px;color:var(--text2);line-height:1.6;margin:0;">Créez, suivez et gérez tous vos tickets de support en un seul endroit. Statuts, priorités et historique des échanges visibles en temps réel.</p>
         </div>
 
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:var(--primsoft);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a2 2 0 012 2v14H7a2 2 0 01-2-2zM5 4v16M9 9h6M9 13h4"/></svg>
             </div>
@@ -196,7 +239,7 @@
             <p style="font-size:14px;color:var(--text2);line-height:1.6;margin:0;">Recherche automatique de solutions. Les clients trouvent des réponses avant même de créer un ticket, réduisant le volume de demandes.</p>
         </div>
 
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:var(--primsoft);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
             </div>
@@ -240,7 +283,7 @@
     <p class="section-sub">HelpDesk AI s'adapte aux besoins de chaque utilisateur : client, agent ou administrateur.</p>
 
     <div class="role-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
@@ -253,7 +296,7 @@
             </ul>
         </div>
 
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,#f59e0b,#f97316);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             </div>
@@ -266,7 +309,7 @@
             </ul>
         </div>
 
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 30px rgba(20,10,50,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow);transition:.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--hover-shadow)'" onmouseout="this.style.transform='none';this.style.boxShadow='var(--shadow)'">
             <div style="width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,#10b981,#059669);display:grid;place-items:center;margin-bottom:18px;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
@@ -295,15 +338,26 @@
                 </a>
                 <a href="{{ route('login') }}" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.3);transition:.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,.6)'" onmouseout="this.style.borderColor='rgba(255,255,255,.3)'">Se connecter</a>
             @else
-                @php $isAdmin = auth()->user()->role->value === 'admin'; @endphp
-                @if($isAdmin)
-                    <a href="/admin/dashboard" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:var(--accent);text-decoration:none;background:#fff;transition:.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                @php
+                    $userRole = auth()->user()->role;
+                    $dashboardUrl = match($userRole) {
+                        \App\Enums\UserRole::Admin => '/admin/dashboard',
+                        \App\Enums\UserRole::Agent => '/agent/dashboard',
+                        default => null,
+                    };
+                @endphp
+                @if($dashboardUrl)
+                    <a href="{{ $dashboardUrl }}" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:var(--accent);text-decoration:none;background:#fff;transition:.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         Accéder à mon espace
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </a>
                 @else
                     <span style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);cursor:default;">Espace bientôt disponible</span>
                 @endif
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,.6)'" onmouseout="this.style.borderColor='rgba(255,255,255,.3)'">Déconnexion</button>
+                </form>
             @endguest
         </div>
     </div>
@@ -318,11 +372,50 @@
             <span style="font-size:12px;color:var(--muted);">&copy; {{ date('Y') }}</span>
         </div>
         <div style="display:flex;gap:20px;font-size:13px;">
-            <a href="{{ route('login') }}" style="color:var(--text2);text-decoration:none;font-weight:600;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Connexion</a>
-            <a href="{{ route('register') }}" style="color:var(--text2);text-decoration:none;font-weight:600;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Inscription</a>
+            @guest
+                <a href="{{ route('login') }}" style="color:var(--text2);text-decoration:none;font-weight:600;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Connexion</a>
+                <a href="{{ route('register') }}" style="color:var(--text2);text-decoration:none;font-weight:600;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Inscription</a>
+            @else
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" style="color:var(--text2);text-decoration:none;font-weight:600;background:none;border:none;padding:0;cursor:pointer;transition:.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">Déconnexion</button>
+                </form>
+            @endguest
         </div>
     </div>
 </footer>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var html = document.documentElement;
+            var savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            }
+
+            var themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    var current = html.getAttribute('data-theme');
+                    var next = current === 'light' ? 'dark' : 'light';
+                    html.setAttribute('data-theme', next);
+                    localStorage.setItem('theme', next);
+                    updateThemeIcon(next);
+                });
+            }
+        });
+
+        function updateThemeIcon(theme) {
+            var icon = document.getElementById('theme-icon');
+            if (!icon) return;
+            if (theme === 'dark') {
+                icon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M5 5l1.4 1.4M17.6 17.6L19 19M3 12h2M19 12h2M5 19l1.4-1.4M17.6 6.4L19 5"></path>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"></path>';
+            }
+        }
+    </script>
 
 </body>
 </html>
