@@ -174,7 +174,7 @@
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                 <div style="font-weight:800;font-size:16px;color:var(--text);">Derniers tickets</div>
-                <a href="#" style="font-size:13px;font-weight:700;color:var(--accent);text-decoration:none;">Tout voir</a>
+                <a href="{{ route('admin.tickets.index') }}" style="font-size:13px;font-weight:700;color:var(--accent);text-decoration:none;">Tout voir</a>
             </div>
             <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <thead>
@@ -187,7 +187,7 @@
                 </thead>
                 <tbody>
                     @forelse($recentTickets as $ticket)
-                        <tr style="border-top:1px solid var(--border);cursor:pointer;transition:.12s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                        <tr style="border-top:1px solid var(--border);cursor:pointer;transition:.12s;" onclick="window.location='{{ route('admin.tickets.show', $ticket['id']) }}'" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
                             <td style="padding:12px 8px;">
                                 <div style="font-weight:700;color:var(--text);">{{ $ticket['titre'] }}</div>
                                 <div style="font-size:11px;color:var(--muted);">{{ $ticket['client']['name'] ?? 'N/A' }} · {{ $ticket['categorie']['nom'] ?? 'N/A' }}</div>

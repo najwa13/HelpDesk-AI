@@ -278,3 +278,151 @@ test('une conversation appartenant à un autre ticket retourne 404', function ()
             'Conversation IA introuvable pour ce ticket.'
         );
 });
+
+test('latest retourne available false quand aucune conversation', function () {
+    Sanctum::actingAs($this->agent);
+
+    $this->getJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat/latest"
+    )
+        ->assertOk()
+        ->assertJsonPath('available', false)
+        ->assertJsonPath('conversation', null);
+});
+
+test('latest retourne la dernière conversation du ticket', function () {
+    Sanctum::actingAs($this->agent);
+
+    $conversationId = (string) Str::uuid();
+
+    DB::table('agent_conversations')->insert([
+        'id' => $conversationId,
+        'participant_type' => Ticket::class,
+        'participant_id' => $this->ticket->id,
+        'title' => 'Diagnostic réseau',
+        'created_at' => now()->subHour(),
+        'updated_at' => now(),
+    ]);
+
+    $this->getJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat/latest"
+    )
+        ->assertOk()
+        ->assertJsonPath('available', true)
+        ->assertJsonPath('conversation.id', $conversationId)
+        ->assertJsonPath('conversation.title', 'Diagnostic réseau');
+});
+
+test('latest ne retourne pas les conversations d\'un autre ticket', function () {
+    Sanctum::actingAs($this->agent);
+
+    $otherTicket = Ticket::create([
+        'titre' => 'Autre ticket',
+        'description' => 'Description.',
+        'statut' => TicketStatus::Ouvert,
+        'client_id' => $this->client->id,
+        'agent_id' => $this->agent->id,
+        'categorie_id' => $this->category->id,
+    ]);
+
+    DB::table('agent_conversations')->insert([
+        'id' => (string) Str::uuid(),
+        'participant_type' => Ticket::class,
+        'participant_id' => $otherTicket->id,
+        'title' => 'Conv autre ticket',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $this->getJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat/latest"
+    )
+        ->assertOk()
+        ->assertJsonPath('available', false);
+});
+
+test('un agent non affecté ne peut pas appeler latest', function () {
+    Sanctum::actingAs($this->otherAgent);
+
+    $this->getJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat/latest"
+    )->assertForbidden();
+});
+
+test('latest retourne la conversation la plus récente', function () {
+    Sanctum::actingAs($this->agent);
+
+    $oldId = (string) Str::uuid();
+    $newId = (string) Str::uuid();
+
+    DB::table('agent_conversations')->insert([
+        'id' => $oldId,
+        'participant_type' => Ticket::class,
+        'participant_id' => $this->ticket->id,
+        'title' => 'Ancienne conv',
+        'created_at' => now()->subDays(3),
+        'updated_at' => now()->subDays(2),
+    ]);
+
+    DB::table('agent_conversations')->insert([
+        'id' => $newId,
+        'participant_type' => Ticket::class,
+        'participant_id' => $this->ticket->id,
+        'title' => 'Nouvelle conv',
+        'created_at' => now()->subHour(),
+        'updated_at' => now(),
+    ]);
+
+    $this->getJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat/latest"
+    )
+        ->assertOk()
+        ->assertJsonPath('available', true)
+        ->assertJsonPath('conversation.id', $newId)
+        ->assertJsonPath('conversation.title', 'Nouvelle conv');
+});
+
+test('un message normal de trois questions n\'est jamais rejeté comme trop long', function () {
+    Bus::fake();
+
+    Sanctum::actingAs($this->agent);
+
+    $this->postJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat",
+        [
+            'message' => 'Donne-moi maintenant trois questions précises à poser au client.',
+        ]
+    )
+        ->assertAccepted()
+        ->assertJsonPath('message', 'Message envoyé à l’assistant IA.');
+
+    Bus::assertDispatched(
+        ProcessAgentAiChatJob::class,
+        function (ProcessAgentAiChatJob $job) {
+            return $job->message === 'Donne-moi maintenant trois questions précises à poser au client.';
+        }
+    );
+});
+
+test('un message réellement trop long est rejeté avec un message de validation en français', function () {
+    Bus::fake();
+
+    Sanctum::actingAs($this->agent);
+
+    $response = $this->postJson(
+        "/api/v1/tickets/{$this->ticket->id}/ai/chat",
+        [
+            'message' => str_repeat('a', 2001),
+        ]
+    );
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('message');
+
+    $this->assertSame(
+        'Votre message dépasse la limite autorisée.',
+        $response->json('errors.message.0')
+    );
+
+    Bus::assertNotDispatched(ProcessAgentAiChatJob::class);
+});

@@ -72,4 +72,37 @@ class AiChatController extends Controller
             ],
         ]);
     }
+
+    public function latest(Ticket $ticket): JsonResponse
+    {
+        $this->authorize('view', $ticket);
+
+        $conversationTable = config(
+            'ai.conversations.tables.conversations',
+            'agent_conversations'
+        );
+
+        $conversation = DB::table($conversationTable)
+            ->where('participant_type', Ticket::class)
+            ->where('participant_id', $ticket->id)
+            ->latest('updated_at')
+            ->first(['id', 'title', 'created_at', 'updated_at']);
+
+        if (! $conversation) {
+            return response()->json([
+                'available' => false,
+                'conversation' => null,
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'conversation' => [
+                'id' => $conversation->id,
+                'title' => $conversation->title,
+                'created_at' => $conversation->created_at,
+                'updated_at' => $conversation->updated_at,
+            ],
+        ]);
+    }
 }

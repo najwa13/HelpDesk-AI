@@ -77,6 +77,10 @@ Route::prefix('v1')->group(function () {
             AiAnalysisController::class,
             'validateSuggestion',
         ]);
+        Route::get('/tickets/{ticket}/ai/chat/latest', [
+            AiChatController::class,
+            'latest',
+        ]);
         Route::post('/tickets/{ticket}/ai/chat', [
             AiChatController::class,
             'send',

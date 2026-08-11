@@ -149,15 +149,20 @@ test('la notification d affectation contient les bonnes données', function () {
         ]
     )->assertOk();
 
+    $ref = '#TK-'.str_pad((string) $this->ticket->id, 4, '0', STR_PAD_LEFT);
+
     Notification::assertSentTo(
         $this->agent,
         TicketAssignedNotification::class,
-        function (TicketAssignedNotification $notification) {
+        function (TicketAssignedNotification $notification) use ($ref) {
             $data = $notification->toDatabase($this->agent);
 
             return $data['ticket_id'] === $this->ticket->id
-                && $data['message']
-                    === "Le ticket #{$this->ticket->id} vous a été affecté.";
+                && $data['type'] === 'ticket_assigned'
+                && $data['ticket_ref'] === $ref
+                && $data['title'] === 'Nouveau ticket assigné'
+                && $data['message'] === "Le ticket {$ref} vous a été assigné."
+                && str_contains($data['url'], "/agent/tickets/{$this->ticket->id}");
         }
     );
 });

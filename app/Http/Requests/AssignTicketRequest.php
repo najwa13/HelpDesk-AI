@@ -24,7 +24,7 @@ class AssignTicketRequest extends FormRequest
     {
         return [
             'agent_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:users,id',
             ],
