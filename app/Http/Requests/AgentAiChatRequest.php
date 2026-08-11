@@ -28,4 +28,16 @@ class AgentAiChatRequest extends FormRequest
             ],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'message.required' => 'Le message est obligatoire.',
+            'message.string' => 'Le message doit être une chaîne de caractères.',
+            'message.min' => 'Le message est trop court.',
+            'message.max' => 'Votre message dépasse la limite autorisée.',
+            'conversation_id.string' => 'La conversation est invalide.',
+            'conversation_id.size' => 'La conversation est invalide.',
+        ];
+    }
 }
