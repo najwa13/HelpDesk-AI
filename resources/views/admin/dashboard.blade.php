@@ -53,9 +53,6 @@
 
     $lineSeries = $categories->map(function ($items, $name) use ($allMonths, $categoryColors, $categories) {
         $colorIndex = $categories->keys()->search($name);
-        if ($colorIndex === false) {
-            $colorIndex = 0;
-        }
         $color = $categoryColors[$colorIndex % count($categoryColors)];
         $monthTotals = collect($allMonths)->map(function ($month) use ($items) {
             $found = $items->firstWhere('month', $month);
