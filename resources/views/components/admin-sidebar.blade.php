@@ -21,39 +21,38 @@
                 [
                     'label' => 'Vue globale',
                     'route' => 'admin.dashboard',
+                    'prefix' => 'admin.dashboard',
                     'icon' => 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
                 ],
                 [
                     'label' => 'Tickets',
-                    'route' => null,
+                    'route' => 'admin.tickets.index',
+                    'prefix' => 'admin.tickets',
                     'icon' => 'M4 7a2 2 0 012-2h12a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 000-4zM12 5v14',
                 ],
                 [
                     'label' => 'Agents & Catégories',
-                    'route' => null,
+                    'route' => 'admin.management',
+                    'prefix' => 'admin.management',
                     'icon' => 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
                 ],
                 [
                     'label' => 'Base de connaissances',
-                    'route' => null,
+                    'route' => 'admin.knowledge.index',
+                    'prefix' => 'admin.knowledge',
                     'icon' => 'M5 4h11a2 2 0 012 2v14H7a2 2 0 01-2-2zM5 4v16M9 9h6M9 13h4',
-                ],
-                [
-                    'label' => 'Assistant IA',
-                    'route' => null,
-                    'icon' => 'M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z',
                 ],
             ];
         @endphp
 
         @foreach($navItems as $item)
             @php
-                $isActive = $item['route'] && $currentRoute === $item['route'];
+                $isActive = str_starts_with($currentRoute, $item['prefix']);
                 $activeStyle = $isActive
                     ? 'background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 12px -3px var(--accent);'
                     : 'background:transparent;color:var(--text2);border-color:transparent;';
             @endphp
-            <a href="{{ $item['route'] ? route($item['route']) : '#', }}"
+            <a href="{{ route($item['route']) }}"
                style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;font-size:13.5px;font-weight:600;text-decoration:none;transition:.15s;{{ $activeStyle }}"
                onmouseover="if(!this.classList.contains('active')){this.style.background='var(--surface2)';this.style.color='var(--text)'}"
                onmouseout="if(!this.classList.contains('active')){this.style.background='transparent';this.style.color='var(--text2)'}"
