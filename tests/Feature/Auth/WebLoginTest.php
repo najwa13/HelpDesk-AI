@@ -48,7 +48,7 @@ test('un agent peut se connecter et est redirigé vers /agent/dashboard', functi
     $this->assertAuthenticatedAs($user);
 });
 
-test('un client peut se connecter et est redirigé vers la page d\'accueil', function () {
+test('un client peut se connecter et est redirigé vers ses tickets', function () {
     $user = User::factory()->create([
         'email' => 'client@helpdesk.ai',
         'password' => Hash::make('password123'),
@@ -60,7 +60,7 @@ test('un client peut se connecter et est redirigé vers la page d\'accueil', fun
         'password' => 'password123',
     ]);
 
-    $response->assertRedirect('/');
+    $response->assertRedirect('/client/tickets');
     $this->assertAuthenticatedAs($user);
 });
 

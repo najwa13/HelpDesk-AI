@@ -109,6 +109,7 @@
                     $dashboardUrl = match($userRole) {
                         \App\Enums\UserRole::Admin => '/admin/dashboard',
                         \App\Enums\UserRole::Agent => '/agent/dashboard',
+                        \App\Enums\UserRole::Client => '/client/tickets',
                         default => null,
                     };
                 @endphp
@@ -150,6 +151,7 @@
                         $dashboardUrl = match($userRole) {
                             \App\Enums\UserRole::Admin => '/admin/dashboard',
                             \App\Enums\UserRole::Agent => '/agent/dashboard',
+                            \App\Enums\UserRole::Client => '/client/tickets',
                             default => null,
                         };
                     @endphp
@@ -343,6 +345,7 @@
                     $dashboardUrl = match($userRole) {
                         \App\Enums\UserRole::Admin => '/admin/dashboard',
                         \App\Enums\UserRole::Agent => '/agent/dashboard',
+                        \App\Enums\UserRole::Client => '/client/tickets',
                         default => null,
                     };
                 @endphp

@@ -93,6 +93,10 @@ Route::prefix('v1')->group(function () {
             ClientAiChatController::class,
             'send',
         ]);
+        Route::get('/client/ai/chat/latest', [
+            ClientAiChatController::class,
+            'latest',
+        ]);
 
         Route::get('/client/ai/chat/{conversationId}', [
             ClientAiChatController::class,

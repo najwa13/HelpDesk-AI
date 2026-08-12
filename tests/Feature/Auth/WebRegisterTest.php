@@ -23,7 +23,7 @@ test('un client peut créer un compte valide', function () {
         'password_confirmation' => 'password123',
     ]);
 
-    $response->assertRedirect('/');
+    $response->assertRedirect('/client/tickets');
 
     $this->assertDatabaseHas('users', [
         'name' => 'Jean Dupont',
