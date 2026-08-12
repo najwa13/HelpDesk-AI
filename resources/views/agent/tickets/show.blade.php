@@ -73,13 +73,14 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
                     <div style="display:flex;gap:8px;">
                         @if(count($transitions) > 0)
+                            @php
+                                $statutLabels = collect($statutsDisponibles)->keyBy('value');
+                                $statutCourantLabel = $statutLabels->get($ticketData['statut'])['label'] ?? ucfirst($ticketData['statut']);
+                            @endphp
                             <select data-statut-select style="padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;">
-                                @foreach($statutsDisponibles as $s)
-                                    @php
-                                        $isCurrent = ($s['value'] === $ticketData['statut']);
-                                        $isAllowed = in_array($s['value'], $transitions, true);
-                                    @endphp
-                                    <option value="{{ $s['value'] }}" @selected($isCurrent) @disabled(!$isAllowed && !$isCurrent)>{{ $s['label'] }}</option>
+                                <option value="{{ $ticketData['statut'] }}" selected>{{ $statutCourantLabel }}</option>
+                                @foreach($transitions as $value)
+                                    <option value="{{ $value }}">{{ $statutLabels->get($value)['label'] ?? $value }}</option>
                                 @endforeach
                             </select>
                             <button type="button" data-change-status-btn style="padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">Appliquer</button>

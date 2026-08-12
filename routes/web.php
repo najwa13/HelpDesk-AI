@@ -11,6 +11,10 @@ use App\Http\Controllers\Agent\AgentNotificationController;
 use App\Http\Controllers\Agent\AgentTicketPageController;
 use App\Http\Controllers\Auth\WebLoginController;
 use App\Http\Controllers\Auth\WebRegisterController;
+use App\Http\Controllers\Client\ClientAssistantPageController;
+use App\Http\Controllers\Client\ClientHelpPageController;
+use App\Http\Controllers\Client\ClientNotificationController;
+use App\Http\Controllers\Client\ClientTicketPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -118,3 +122,43 @@ Route::get('/agent/notifications/{notification}/open', [AgentNotificationControl
 Route::post('/agent/notifications/read-all', [AgentNotificationController::class, 'readAll'])
     ->middleware('auth')
     ->name('agent.notifications.read-all');
+
+Route::get('/client/tickets', [ClientTicketPageController::class, 'index'])
+    ->middleware('auth')
+    ->name('client.tickets.index');
+
+Route::get('/client/tickets/create', [ClientTicketPageController::class, 'create'])
+    ->middleware('auth')
+    ->name('client.tickets.create');
+
+Route::post('/client/tickets', [ClientTicketPageController::class, 'store'])
+    ->middleware('auth')
+    ->name('client.tickets.store');
+
+Route::get('/client/tickets/{ticket}', [ClientTicketPageController::class, 'show'])
+    ->middleware('auth')
+    ->name('client.tickets.show');
+
+Route::post('/client/tickets/{ticket}/messages', [ClientTicketPageController::class, 'message'])
+    ->middleware('auth')
+    ->name('client.tickets.message');
+
+Route::get('/client/assistant', [ClientAssistantPageController::class, 'index'])
+    ->middleware('auth')
+    ->name('client.assistant');
+
+Route::get('/client/help', [ClientHelpPageController::class, 'index'])
+    ->middleware('auth')
+    ->name('client.help');
+
+Route::get('/client/help/{article}', [ClientHelpPageController::class, 'show'])
+    ->middleware('auth')
+    ->name('client.help.show');
+
+Route::get('/client/notifications/{notification}/open', [ClientNotificationController::class, 'open'])
+    ->middleware('auth')
+    ->name('client.notifications.open');
+
+Route::post('/client/notifications/read-all', [ClientNotificationController::class, 'readAll'])
+    ->middleware('auth')
+    ->name('client.notifications.read-all');

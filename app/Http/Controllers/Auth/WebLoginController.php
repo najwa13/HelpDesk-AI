@@ -20,7 +20,7 @@ class WebLoginController extends Controller
             return match ($user->role) {
                 UserRole::Admin => redirect('/admin/dashboard'),
                 UserRole::Agent => redirect('/agent/dashboard'),
-                default => redirect('/'),
+                default => redirect('/client/tickets'),
             };
         }
 
@@ -46,7 +46,7 @@ class WebLoginController extends Controller
         return match ($user->role) {
             UserRole::Admin => redirect('/admin/dashboard'),
             UserRole::Agent => redirect('/agent/dashboard'),
-            default => redirect('/'),
+            default => redirect('/client/tickets'),
         };
     }
 

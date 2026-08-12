@@ -81,4 +81,41 @@ class ClientAiChatController extends Controller
             ],
         ]);
     }
+
+    public function latest(Request $request): JsonResponse
+    {
+        $client = $request->user();
+
+        if ($client->role !== UserRole::Client) {
+            abort(403);
+        }
+
+        $conversationTable = config(
+            'ai.conversations.tables.conversations',
+            'agent_conversations'
+        );
+
+        $conversation = DB::table($conversationTable)
+            ->where('participant_type', get_class($client))
+            ->where('participant_id', $client->id)
+            ->latest('updated_at')
+            ->first(['id', 'title', 'created_at', 'updated_at']);
+
+        if (! $conversation) {
+            return response()->json([
+                'available' => false,
+                'conversation' => null,
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'conversation' => [
+                'id' => $conversation->id,
+                'title' => $conversation->title,
+                'created_at' => $conversation->created_at,
+                'updated_at' => $conversation->updated_at,
+            ],
+        ]);
+    }
 }
