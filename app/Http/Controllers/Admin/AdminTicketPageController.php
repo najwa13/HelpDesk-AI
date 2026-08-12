@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssignTicketRequest;
-use App\Models\SearchLog;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\TicketService;
@@ -112,22 +111,12 @@ class AdminTicketPageController extends Controller
                 $query->with('auteur:id,name,role')
                     ->oldest('id');
             },
-            'suggestionsIA' => function ($query) {
-                $query->latest('id')
-                    ->limit(1);
-            },
         ]);
 
         $agents = User::query()
             ->where('role', UserRole::Agent)
             ->orderBy('name')
             ->get(['id', 'name']);
-
-        $articleLie = SearchLog::query()
-            ->where('ticket_id', $ticket->id)
-            ->whereNotNull('article_id')
-            ->latest('id')
-            ->first();
 
         $ticketData = [
             'id' => $ticket->id,
@@ -144,9 +133,6 @@ class AdminTicketPageController extends Controller
             'categorie' => $ticket->categorie
                 ? ['id' => $ticket->categorie->id, 'nom' => $ticket->categorie->nom]
                 : null,
-            'article_lie' => $articleLie
-                ? 'Article #KB-'.str_pad((string) $articleLie->article_id, 2, '0', STR_PAD_LEFT).' lié'
-                : null,
             'messages' => $ticket->messages->map(function ($message) {
                 return [
                     'id' => $message->id,
@@ -161,17 +147,6 @@ class AdminTicketPageController extends Controller
                     'created_at' => $message->created_at?->toISOString(),
                 ];
             })->all(),
-            'suggestion_ia' => $ticket->suggestionsIA->first()
-                ? [
-                    'id' => $ticket->suggestionsIA->first()->id,
-                    'resume' => $ticket->suggestionsIA->first()->resume,
-                    'categorie_proposee' => $ticket->suggestionsIA->first()->categorie_proposee,
-                    'priorite_proposee' => $ticket->suggestionsIA->first()->priorite_proposee,
-                    'brouillon_reponse' => $ticket->suggestionsIA->first()->brouillon_reponse,
-                    'statut' => $ticket->suggestionsIA->first()->statut,
-                    'created_at' => $ticket->suggestionsIA->first()->created_at?->toISOString(),
-                ]
-                : null,
             'created_at' => $ticket->created_at?->toISOString(),
             'updated_at' => $ticket->updated_at?->toISOString(),
         ];
