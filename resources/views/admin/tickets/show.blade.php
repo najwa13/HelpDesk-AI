@@ -7,7 +7,6 @@
 @php
     $ref = '#TK-' . str_pad($ticketData['id'], 4, '0', STR_PAD_LEFT);
     $createdDate = $ticketData['created_at'] ? \Carbon\Carbon::parse($ticketData['created_at'])->format('d/m/Y') : 'N/A';
-    $suggestion = $ticketData['suggestion_ia'] ?? null;
 @endphp
 
 @section('content')
@@ -95,40 +94,6 @@
                     <button type="submit" style="width:100%;padding:11px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:13.5px;font-family:inherit;cursor:pointer;box-shadow:0 7px 16px -6px var(--accent);transition:.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Assigner l'agent</button>
                 </form>
             </div>
-
-            <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow);">
-                <div style="font-weight:800;font-size:15px;color:var(--text);margin-bottom:4px;">Analyse IA</div>
-                <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Dernière suggestion générée pour ce ticket.</div>
-
-                @if($ticketData['article_lie'])
-                    <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;background:var(--primsoft);color:var(--accent);font-size:11px;font-weight:700;margin-bottom:12px;">{{ $ticketData['article_lie'] }}</span>
-                @endif
-
-                @if($suggestion && $suggestion['resume'])
-                    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">Résumé</div>
-                    <div style="font-size:13px;line-height:1.55;color:var(--text2);background:var(--primsoft);padding:12px 13px;border-radius:11px;border:1px solid var(--border);margin-bottom:14px;">{{ $suggestion['resume'] }}</div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-                        <div>
-                            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">Catégorie</div>
-                            <div style="font-size:13px;font-weight:700;color:var(--text);background:var(--surface2);padding:10px 12px;border-radius:11px;border:1px solid var(--border);">{{ $suggestion['categorie_proposee'] }}</div>
-                        </div>
-                        <div>
-                            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">Priorité</div>
-                            <div style="font-size:13px;font-weight:700;color:var(--text);background:var(--surface2);padding:10px 12px;border-radius:11px;border:1px solid var(--border);">{{ ucfirst($suggestion['priorite_proposee']) }}</div>
-                        </div>
-                    </div>
-
-                    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">Brouillon de réponse</div>
-                    <div style="font-size:12.5px;line-height:1.55;color:var(--text2);background:var(--surface2);padding:12px 13px;border-radius:11px;border:1px solid var(--border);">{{ $suggestion['brouillon_reponse'] }}</div>
-                @else
-                    <div style="text-align:center;padding:22px 6px;color:var(--muted);">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;opacity:.5;"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"></path></svg>
-                        <div style="font-size:12.5px;font-weight:700;color:var(--text2);">Aucune analyse pour ce ticket.</div>
-                    </div>
-                @endif
-            </div>
-        </div>
     </div>
 </div>
 @endsection
